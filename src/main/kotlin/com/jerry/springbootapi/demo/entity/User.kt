@@ -5,6 +5,7 @@ import javax.persistence.*
 @Entity
 @Table
 data class User (
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long,
@@ -14,5 +15,8 @@ data class User (
 
     @Column(name = "last_name")
     val lastName: String? = null,
+
+    @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val todos : List<Todo> = listOf()
 )
 

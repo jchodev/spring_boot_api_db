@@ -1,5 +1,6 @@
 package com.jerry.springbootapi.demo.entity
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import javax.persistence.*
 
 @Entity
@@ -7,9 +8,13 @@ import javax.persistence.*
 data class Todo (
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
-        val id: Long,
+        val id: Long = 0 ,
 
         @Column(name = "task")
-        val task: String? = null
+        val task: String? = null,
 
+        @JsonIgnoreProperties("todos") // ignore the user property when serializing to JSON
+        @ManyToOne(fetch = FetchType.LAZY)
+        @JoinColumn(name = "user_id", nullable = false)
+        var user: User
 )
