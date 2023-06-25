@@ -10,7 +10,7 @@ This is a personal study , spring boot , api ...etc
 
 
 # Connect H2 DB console
-http://localhost:8080/h2-console/
+- http://localhost:8080/h2-console/
 
 # api
 - http://localhost:8080/users
