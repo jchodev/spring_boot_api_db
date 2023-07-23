@@ -1,12 +1,18 @@
 package com.jerry.springbootapi.demo.controller
 
+import com.jerry.springbootapi.demo.dto.UserDTO
 import com.jerry.springbootapi.demo.entity.User
 import com.jerry.springbootapi.demo.repository.TodoRepository
+import com.jerry.springbootapi.demo.response.MyResponse
 import com.jerry.springbootapi.demo.service.UserService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.domain.Page
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/api/users")
 class UserController {
     
     @Autowired
@@ -15,9 +21,26 @@ class UserController {
     @Autowired
     lateinit var todoRepository: TodoRepository
 
-    @GetMapping("/users")
-    fun getAllUsers(): List<User> {
-        return userService.getAllUser()
+//    @GetMapping
+//    fun getAllUsers(): List<User> {
+//        return userService.getAllUser()
+//    }
+
+    @GetMapping
+    fun getAllUsersByPage(@RequestParam pageNumber: Int): Page<User> {
+        return userService.getUserByPage(page = pageNumber)
+    }
+
+    @GetMapping("/{id}")
+    fun getUserById(@PathVariable id: Long): MyResponse<User?> {
+        val user = userService.getUserById(id = id)
+        return MyResponse.success(user)
+    }
+
+    @ExceptionHandler(NotFoundException::class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    fun handleNotFoundException(e: NotFoundException): MyResponse<Nothing> {
+        return MyResponse.error(HttpStatus.NOT_FOUND, e.message!!)
     }
 
 //    @PostMapping("/addUser")
@@ -46,26 +69,8 @@ class UserController {
 //        )
 //    }
 //
-//    @PostMapping("/addUser4")
-//    fun createUser4(@RequestBody userDTO: UserDTO): User {
-//
-//        val user = userRepository.save(
-//                User(
-//                        firstName = userDTO.firstName,
-//                        lastName = userDTO.firstName,
-//                        id = 0
-//                )
-//        )
-//
-//        userDTO.todos.forEach {
-//            todoRepository.save(
-//                    Todo(
-//                            user = user,
-//                            task = it.task
-//                    )
-//            )
-//        }
-//
-//        return user
-//    }
+    @PostMapping("/addUser")
+    fun createUser(@RequestBody userDTO: UserDTO): User {
+        return userService.createUser(userDTO)
+    }
 }
